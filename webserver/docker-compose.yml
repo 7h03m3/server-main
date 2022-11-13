@@ -12,6 +12,7 @@ services:
       - ./data/www:/var/www/default
     networks:
       - proxynet
+    command: "/bin/sh -c 'while :; do sleep 24h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
 
   main-certbot:
     image: certbot/certbot
@@ -20,6 +21,7 @@ services:
       - ./data/certbot/www:/var/www/certbot
     networks:
       - proxynet
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 24h & wait $${!}; done;'"
       
 networks:
   proxynet:
